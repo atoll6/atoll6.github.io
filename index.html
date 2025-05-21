@@ -3,9 +3,114 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test</title>
+  <title>Your Name | Personal Website</title>
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f7f9fb;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      width: 100%;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      padding: 2rem 0 1rem 0;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
+    header p {
+      margin: 0.5rem 0 0 0;
+      color: #666;
+      font-size: 1.2rem;
+    }
+    main {
+      max-width: 600px;
+      width: 100%;
+      background: #fff;
+      margin: 2rem 0;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    }
+    section {
+      margin-bottom: 2rem;
+    }
+    h2 {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+      color: #1a73e8;
+    }
+    ul.social {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin: 1.5rem 0 0 0;
+    }
+    ul.social li a {
+      color: #1a73e8;
+      text-decoration: none;
+      font-size: 1.5rem;
+      transition: color 0.2s;
+    }
+    ul.social li a:hover {
+      color: #0d47a1;
+    }
+    @media (max-width: 700px) {
+      main {
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+      header h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+  <script src="https://kit.fontawesome.com/4b8b8b8b8b.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  Test
+  <header>
+    <h1>Your Name</h1>
+    <p>Short tagline or profession goes here</p>
+    <ul class="social">
+      <li><a href="https://github.com/yourusername" target="_blank" title="GitHub"><i class="fab fa-github"></i></a></li>
+      <li><a href="https://linkedin.com/in/yourusername" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a></li>
+      <li><a href="mailto:your@email.com" title="Email"><i class="fas fa-envelope"></i></a></li>
+    </ul>
+  </header>
+  <main>
+    <section>
+      <h2>About Me</h2>
+      <p>
+        Write a short introduction about yourself, your interests, or your background here.
+      </p>
+    </section>
+    <section>
+      <h2>Projects</h2>
+      <ul>
+        <li><strong>Project One</strong> – Short description of your project. <a href="#">View</a></li>
+        <li><strong>Project Two</strong> – Short description of your project. <a href="#">View</a></li>
+      </ul>
+    </section>
+    <section>
+      <h2>Contact</h2>
+      <p>
+        Feel free to reach out via <a href="mailto:your@email.com">email</a> or connect on social media.
+      </p>
+    </section>
+  </main>
 </body>
 </html>
