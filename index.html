@@ -10,17 +10,17 @@
       margin: 0;
       padding: 0;
       font-family: 'Inter', Arial, sans-serif;
-      color: #222;
+      color: #fff;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      background: #000; /* fallback */
+      background: #000;
     }
     header {
       width: 100%;
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      background: transparent;
+      box-shadow: none;
       padding: 2rem 0 1rem 0;
       text-align: center;
       position: relative;
@@ -31,20 +31,23 @@
       font-size: 2.5rem;
       font-weight: 700;
       letter-spacing: -1px;
+      color: #ffe082;
+      text-shadow: 0 2px 16px #000;
     }
     header p {
       margin: 0.5rem 0 0 0;
-      color: #666;
+      color: #bdbdbd;
       font-size: 1.2rem;
+      text-shadow: 0 1px 8px #000;
     }
     main {
       max-width: 600px;
       width: 100%;
-      background: #fff;
+      background: transparent;
       margin: 2rem 0;
       padding: 2rem;
       border-radius: 1rem;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+      box-shadow: none;
       position: relative;
       z-index: 1;
     }
@@ -54,7 +57,8 @@
     h2 {
       font-size: 1.4rem;
       margin-bottom: 0.5rem;
-      color: #1a73e8;
+      color: #90caf9;
+      text-shadow: 0 1px 8px #000;
     }
     ul.social {
       list-style: none;
@@ -65,13 +69,14 @@
       margin: 1.5rem 0 0 0;
     }
     ul.social li a {
-      color: #1a73e8;
+      color: #90caf9;
       text-decoration: none;
       font-size: 1.5rem;
       transition: color 0.2s;
+      text-shadow: 0 1px 8px #000;
     }
     ul.social li a:hover {
-      color: #0d47a1;
+      color: #ffe082;
     }
     @media (max-width: 700px) {
       main {
@@ -95,35 +100,26 @@
 <body>
   <canvas id="solar3d"></canvas>
   <header>
-    <h1>Your Name</h1>
-    <p>Short tagline or profession goes here</p>
+    <h1>Arda Tolan</h1>
+    <p>Computer Science and Engineering Student</p>
     <ul class="social">
-      <li><a href="https://github.com/yourusername" target="_blank" title="GitHub"><i class="fab fa-github"></i></a></li>
-      <li><a href="https://linkedin.com/in/yourusername" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a></li>
-      <li><a href="mailto:your@email.com" title="Email"><i class="fas fa-envelope"></i></a></li>
+      <li>
+        <a href="https://github.com/atoll6" target="_blank" title="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+      </li>
+      <li>
+        <a href="https://linkedin.com/in/ardatolan" target="_blank" title="LinkedIn">
+          <i class="fab fa-linkedin"></i>
+        </a>
+      </li>
+      <li>
+        <a href="mailto:arda.tolan@gmail.com" title="Email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
     </ul>
   </header>
-  <main>
-    <section>
-      <h2>About Me</h2>
-      <p>
-        Write a short introduction about yourself, your interests, or your background here.
-      </p>
-    </section>
-    <section>
-      <h2>Projects</h2>
-      <ul>
-        <li><strong>Project One</strong> – Short description of your project. <a href="#">View</a></li>
-        <li><strong>Project Two</strong> – Short description of your project. <a href="#">View</a></li>
-      </ul>
-    </section>
-    <section>
-      <h2>Contact</h2>
-      <p>
-        Feel free to reach out via <a href="mailto:your@email.com">email</a> or connect on social media.
-      </p>
-    </section>
-  </main>
   <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
   <script>
     // Setup
