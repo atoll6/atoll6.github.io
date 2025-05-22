@@ -96,6 +96,13 @@
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.153.0/build/three.module.js"
+    }
+  }
+  </script>
 </head>
 <body>
   <canvas id="solar3d"></canvas>
@@ -120,34 +127,40 @@
       </li>
     </ul>
   </header>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
-  <script>
+  <script type="module">
+    import * as THREE from 'three';
+
     // Setup
     const canvas = document.getElementById('solar3d');
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000, 0); // transparent
+    renderer.setClearColor(0x000000, 0);
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
-    // Move the camera up and back, then look at the center
     camera.position.set(0, 25, 60);
     camera.lookAt(0, 0, 0);
 
     const loader = new THREE.TextureLoader();
 
-    // Sun with texture
-    const sunGeometry = new THREE.SphereGeometry(5, 32, 32);
-    const sunTexture = loader.load('https://www.solarsystemscope.com/textures/download/2k_sun.jpg');
-    const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
-    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-    scene.add(sun);
+    // Add ambient light so textures are visible
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
+    scene.add(ambientLight);
+
+    // Sun with texture (load asynchronously)
+    let sun;
+    loader.load('https://www.solarsystemscope.com/textures/download/2k_sun.jpg', function(sunTexture) {
+      const sunGeometry = new THREE.SphereGeometry(5, 32, 32);
+      const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
+      sun = new THREE.Mesh(sunGeometry, sunMaterial);
+      scene.add(sun);
+    });
 
     // Add a glow to the sun
     const sunGlow = new THREE.PointLight(0xfff200, 2, 100);
     scene.add(sunGlow);
 
-    // Planets data: [name, textureURL, radius, size, orbitSpeed, hasRing, ringTextureURL]
+    // Rest of your code exactly the same...
     const planetData = [
       ['Mercury', 'https://www.solarsystemscope.com/textures/download/2k_mercury.jpg', 9, 0.7, 0.018, false, null],
       ['Venus',   'https://www.solarsystemscope.com/textures/download/2k_venus_surface.jpg', 12, 1.1, 0.014, false, null],
@@ -161,34 +174,33 @@
 
     const planets = [];
     planetData.forEach(([name, textureURL, orbitRadius, size, speed, hasRing, ringTextureURL], i) => {
-      // Planet sphere with texture
-      const geometry = new THREE.SphereGeometry(size, 24, 24);
-      const texture = loader.load(textureURL);
-      const material = new THREE.MeshBasicMaterial({ map: texture });
-      const mesh = new THREE.Mesh(geometry, material);
-      scene.add(mesh);
+      loader.load(textureURL, function(texture) {
+        const geometry = new THREE.SphereGeometry(size, 24, 24);
+        const material = new THREE.MeshBasicMaterial({ map: texture });
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
 
-      // Optional: Add ring for Saturn and Uranus
-      let ring;
-      if (hasRing && ringTextureURL) {
-        const ringGeometry = new THREE.RingGeometry(size * 1.4, size * 2.2, 64);
-        const ringTexture = loader.load(ringTextureURL);
-        const ringMaterial = new THREE.MeshBasicMaterial({
-          map: ringTexture,
-          side: THREE.DoubleSide,
-          transparent: true,
-          opacity: 0.8
-        });
-        ring = new THREE.Mesh(ringGeometry, ringMaterial);
-        ring.rotation.x = Math.PI / 2;
-        mesh.add(ring);
-      }
+        if (hasRing && ringTextureURL) {
+          loader.load(ringTextureURL, function(ringTexture) {
+            const ringGeometry = new THREE.RingGeometry(size * 1.4, size * 2.2, 64);
+            const ringMaterial = new THREE.MeshBasicMaterial({
+              map: ringTexture,
+              side: THREE.DoubleSide,
+              transparent: true,
+              opacity: 0.8
+            });
+            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            ring.rotation.x = Math.PI / 2;
+            mesh.add(ring);
+          });
+        }
 
-      planets.push({ mesh, orbitRadius, speed, phase: Math.random() * Math.PI * 2 });
+        planets.push({ mesh, orbitRadius, speed, phase: Math.random() * Math.PI * 2 });
+      });
     });
 
-    // Optionally, add orbit lines for each planet
-    planetData.forEach(([name, color, orbitRadius]) => {
+    // Orbit lines
+    planetData.forEach(([name, , orbitRadius]) => {
       const orbitGeometry = new THREE.RingGeometry(orbitRadius - 0.01, orbitRadius + 0.01, 64);
       const orbitMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.08 });
       const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
@@ -199,12 +211,12 @@
     // Animation loop
     function animate() {
       requestAnimationFrame(animate);
-      planets.forEach((planet, i) => {
+      planets.forEach((planet) => {
         const t = Date.now() * planet.speed * 0.5e-1 + planet.phase;
         planet.mesh.position.x = Math.cos(t) * planet.orbitRadius;
         planet.mesh.position.z = Math.sin(t) * planet.orbitRadius;
       });
-      sun.rotation.y += 0.002;
+      if (sun) sun.rotation.y += 0.002;
       renderer.render(scene, camera);
     }
     animate();
