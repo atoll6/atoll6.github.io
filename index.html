@@ -10,15 +10,12 @@
       margin: 0;
       padding: 0;
       font-family: 'Inter', Arial, sans-serif;
-      background: url('https://cdn.jsdelivr.net/gh/joshuae/solar-system-3d/images/solar-system-3d.gif');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
       color: #222;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      background: #000; /* fallback */
     }
     header {
       width: 100%;
@@ -26,6 +23,8 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
       padding: 2rem 0 1rem 0;
       text-align: center;
+      position: relative;
+      z-index: 1;
     }
     header h1 {
       margin: 0;
@@ -46,6 +45,8 @@
       padding: 2rem;
       border-radius: 1rem;
       box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+      position: relative;
+      z-index: 1;
     }
     section {
       margin-bottom: 2rem;
@@ -81,10 +82,18 @@
         font-size: 2rem;
       }
     }
+    #solar3d {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
   </style>
   <script src="https://kit.fontawesome.com/4b8b8b8b8b.js" crossorigin="anonymous"></script>
 </head>
 <body>
+  <canvas id="solar3d"></canvas>
   <header>
     <h1>Your Name</h1>
     <p>Short tagline or profession goes here</p>
@@ -115,5 +124,55 @@
       </p>
     </section>
   </main>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
+  <script>
+    // Setup
+    const canvas = document.getElementById('solar3d');
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 0); // transparent
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+    camera.position.z = 40;
+
+    // Sun
+    const sunGeometry = new THREE.SphereGeometry(4, 32, 32);
+    const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffcc00 });
+    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+    scene.add(sun);
+
+    // Planets (simple)
+    const planets = [];
+    const planetColors = [0x2196f3, 0x8bc34a, 0xff5722, 0x9c27b0];
+    const radii = [8, 12, 16, 22];
+    for (let i = 0; i < 4; i++) {
+      const geometry = new THREE.SphereGeometry(1, 24, 24);
+      const material = new THREE.MeshBasicMaterial({ color: planetColors[i] });
+      const mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+      planets.push({ mesh, radius: radii[i], speed: 0.01 + i * 0.008, phase: Math.random() * Math.PI * 2 });
+    }
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      planets.forEach((planet, i) => {
+        const t = Date.now() * planet.speed * 0.001 + planet.phase;
+        planet.mesh.position.x = Math.cos(t) * planet.radius;
+        planet.mesh.position.z = Math.sin(t) * planet.radius;
+      });
+      sun.rotation.y += 0.002;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Responsive
+    window.addEventListener('resize', () => {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    });
+  </script>
 </body>
 </html>
