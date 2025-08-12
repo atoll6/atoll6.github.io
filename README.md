@@ -1,4 +1,3 @@
-
 # atoll6.github.io
 
 This is a static website hosted with GitHub Pages.
