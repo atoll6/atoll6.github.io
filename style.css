@@ -32,26 +32,7 @@ header p {
   font-size: 1.2rem;
   text-shadow: 0 1px 8px #000;
 }
-main {
-  max-width: 600px;
-  width: 100%;
-  background: transparent;
-  margin: 2rem 0;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: none;
-  position: relative;
-  z-index: 1;
-}
-section {
-  margin-bottom: 2rem;
-}
-h2 {
-  font-size: 1.4rem;
-  margin-bottom: 0.5rem;
-  color: #90caf9;
-  text-shadow: 0 1px 8px #000;
-}
+/* Removed unused main, section, and h2 styles */
 ul.social {
   list-style: none;
   padding: 0;
@@ -61,7 +42,7 @@ ul.social {
   margin: 1.5rem 0 0 0;
 }
 ul.social li a {
-  color: #90caf9;
+  color: #90caf9 !important;
   text-decoration: none;
   font-size: 1.5rem;
   transition: color 0.2s;
