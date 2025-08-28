@@ -3,17 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Arda Tolan — Computer Science and Engineering student. Personal website with projects and links.">
   <title>Arda Tolan | Personal Website</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" as="style" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" media="print" onload="this.media='all'" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <noscript>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </noscript>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <canvas id="solar3d"></canvas>
+  <div id="webgl-fallback" role="status" aria-live="polite" hidden>3D background isn't available on this device.</div>
 
   <a
   href="https://atoll6.github.io/dough-calculator/"
   class="dough-btn"
+  aria-label="Open Dough Calculator (opens in a new tab)"
+  target="_blank" rel="noopener noreferrer"
   >
     Dough Calculator
   </a>
@@ -22,17 +32,17 @@
     <p>Computer Science and Engineering Student</p>
     <ul class="social">
       <li>
-        <a href="https://github.com/atoll6" target="_blank" rel="noopener noreferrer" title="GitHub">
+    <a href="https://github.com/atoll6" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub (opens in a new tab)">
           <i class="fab fa-github"></i>
         </a>
       </li>
       <li>
-        <a href="https://linkedin.com/in/ardatolan" target="_blank" rel="noopener noreferrer" title="LinkedIn">
+    <a href="https://linkedin.com/in/ardatolan" target="_blank" rel="noopener noreferrer" title="LinkedIn" aria-label="LinkedIn (opens in a new tab)">
           <i class="fab fa-linkedin"></i>
         </a>
       </li>
       <li>
-        <a href="mailto:arda.tolan@gmail.com" title="Email">
+    <a href="mailto:arda.tolan@gmail.com" title="Email" aria-label="Send email to arda.tolan@gmail.com">
           <i class="fa-solid fa-envelope"></i>
         </a>
       </li>
@@ -40,128 +50,209 @@
   </header>
   <script src="https://unpkg.com/three@0.153.0/build/three.min.js"></script>
   <script>
-    // === Setup ===
+    // === Basic helpers ===
   const canvas = document.getElementById('solar3d');
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(0x000000, 0);
+  const fallbackEl = document.getElementById('webgl-fallback');
 
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 25, 60);
-  camera.lookAt(0, 0, 0);
-
-  // === Lighting ===
-  scene.add(new THREE.AmbientLight(0xffffff, 1.0));
-
-  // === Helpers ===
-  function createRadialTexture(color1, color2, size = 256) {
-    const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    const gradient = ctx.createRadialGradient(size/2, size/2, size/8, size/2, size/2, size/2);
-    gradient.addColorStop(0, color1);
-    gradient.addColorStop(1, color2);
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, size, size);
-    return new THREE.CanvasTexture(canvas);
+  function showFallback(message) {
+    if (fallbackEl) {
+      if (message) fallbackEl.textContent = message;
+      fallbackEl.hidden = false;
+    }
   }
 
-  // === Sun ===
-  function addSun() {
-    const sunGeometry = new THREE.SphereGeometry(5, 32, 32);
-    const sunTexture = createRadialTexture('#fff200', '#ff9800', 512);
-    const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
-    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-    scene.add(sun);
-
-    // Glow
-    const sunGlow = new THREE.PointLight(0xfff200, 2, 100);
-    scene.add(sunGlow);
-
-    return sun;
+  function webglAvailable() {
+    try {
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      return !!gl;
+    } catch (e) {
+      return false;
+    }
   }
 
-  // === Planets ===
-  const planetData = [
-    ['Mercury', '#b2b2b2', '#6e6e6e', 9, 0.7, 0.018, false],
-    ['Venus',   '#e0c16c', '#bfa24d', 12, 1.1, 0.014, false],
-    ['Earth',   '#3a6ea5', '#1b3c5d', 16, 1.2, 0.012, false],
-    ['Mars',    '#b5532a', '#7a2e13', 20, 1.0, 0.010, false],
-    ['Jupiter', '#e0a96d', '#b57c3a', 26, 2.5, 0.008, false],
-    ['Saturn',  '#d2c295', '#b3a178', 33, 2.2, 0.007, true],
-    ['Uranus',  '#7ad7f0', '#3a8ca5', 39, 1.7, 0.006, true],
-    ['Neptune', '#4062a7', '#22345d', 45, 1.7, 0.005, false]
-  ];
+  if (!webglAvailable()) {
+    canvas.style.display = 'none';
+    showFallback("3D background isn't available on this device.");
+  } else {
+    // === Setup ===
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 0);
 
-  function addPlanets() {
-    const planets = [];
-    for (const [name, color1, color2, orbitRadius, size, speed, hasRing] of planetData) {
-      const geometry = new THREE.SphereGeometry(size, 24, 24);
-      const texture = createRadialTexture(color1, color2);
-      const material = new THREE.MeshBasicMaterial({ map: texture });
-      const mesh = new THREE.Mesh(geometry, material);
-      scene.add(mesh);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 25, 60);
+    camera.lookAt(0, 0, 0);
 
-      // Rings
-      if (hasRing) {
-        const ringGeometry = new THREE.RingGeometry(size * 1.4, size * 2.2, 64);
-        const ringMaterial = new THREE.MeshBasicMaterial({
-          color: name === 'Saturn' ? 0xd2c295 : 0x8fc5e7,
+    // === Lighting ===
+    scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+
+    // === Helpers ===
+    function createRadialTexture(color1, color2, size = 256) {
+      const texCanvas = document.createElement('canvas');
+      texCanvas.width = texCanvas.height = size;
+      const ctx = texCanvas.getContext('2d');
+      const gradient = ctx.createRadialGradient(size/2, size/2, size/8, size/2, size/2, size/2);
+      gradient.addColorStop(0, color1);
+      gradient.addColorStop(1, color2);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, size, size);
+      const texture = new THREE.CanvasTexture(texCanvas);
+      if (texture.colorSpace !== undefined) {
+        texture.colorSpace = THREE.SRGBColorSpace;
+      } else if (texture.encoding !== undefined) {
+        texture.encoding = THREE.sRGBEncoding; // fallback for older three versions
+      }
+      texture.anisotropy = 4;
+      return texture;
+    }
+
+    // === Sun ===
+    function addSun() {
+      const sunGeometry = new THREE.SphereGeometry(5, 32, 32);
+      const sunTexture = createRadialTexture('#fff200', '#ff9800', 512);
+      const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
+      const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+      scene.add(sun);
+
+      // Glow
+      const sunGlow = new THREE.PointLight(0xfff200, 2, 100);
+      scene.add(sunGlow);
+
+      return sun;
+    }
+
+    // === Planets ===
+    const planetData = [
+      ['Mercury', '#b2b2b2', '#6e6e6e', 9, 0.7, 0.018, false],
+      ['Venus',   '#e0c16c', '#bfa24d', 12, 1.1, 0.014, false],
+      ['Earth',   '#3a6ea5', '#1b3c5d', 16, 1.2, 0.012, false],
+      ['Mars',    '#b5532a', '#7a2e13', 20, 1.0, 0.010, false],
+      ['Jupiter', '#e0a96d', '#b57c3a', 26, 2.5, 0.008, false],
+      ['Saturn',  '#d2c295', '#b3a178', 33, 2.2, 0.007, true],
+      ['Uranus',  '#7ad7f0', '#3a8ca5', 39, 1.7, 0.006, true],
+      ['Neptune', '#4062a7', '#22345d', 45, 1.7, 0.005, false]
+    ];
+
+    function addPlanets() {
+      const planets = [];
+      for (const [name, color1, color2, orbitRadius, size, speed, hasRing] of planetData) {
+        const geometry = new THREE.SphereGeometry(size, 24, 24);
+        const texture = createRadialTexture(color1, color2);
+        const material = new THREE.MeshBasicMaterial({ map: texture });
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        // Rings
+        if (hasRing) {
+          const ringGeometry = new THREE.RingGeometry(size * 1.4, size * 2.2, 64);
+          const ringMaterial = new THREE.MeshBasicMaterial({
+            color: name === 'Saturn' ? 0xd2c295 : 0x8fc5e7,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.6
+          });
+          const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+          ring.rotation.x = Math.PI / 2;
+          mesh.add(ring);
+        }
+
+        planets.push({ mesh, orbitRadius, speed, phase: Math.random() * Math.PI * 2 });
+      }
+      return planets;
+    }
+
+    // === Orbits ===
+    function addOrbitLines() {
+      for (const [, , , orbitRadius] of planetData) {
+        const orbitGeometry = new THREE.RingGeometry(orbitRadius - 0.01, orbitRadius + 0.01, 64);
+        const orbitMaterial = new THREE.MeshBasicMaterial({
+          color: 0xffffff,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.6
+          opacity: 0.08
         });
-        const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-        ring.rotation.x = Math.PI / 2;
-        mesh.add(ring);
+        const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
+        orbit.rotation.x = Math.PI / 2;
+        scene.add(orbit);
       }
-
-      planets.push({ mesh, orbitRadius, speed, phase: Math.random() * Math.PI * 2 });
     }
-    return planets;
-  }
 
-  // === Orbits ===
-  function addOrbitLines() {
-    for (const [, , , orbitRadius] of planetData) {
-      const orbitGeometry = new THREE.RingGeometry(orbitRadius - 0.01, orbitRadius + 0.01, 64);
-      const orbitMaterial = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.08
+    // === Main ===
+    const sun = addSun();
+    const planets = addPlanets();
+    addOrbitLines();
+
+    // === Reduced motion support ===
+    const motionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let reduceMotion = motionMedia.matches;
+    let rafId = 0;
+
+    function updatePositions(timeMs) {
+      planets.forEach((planet) => {
+        const t = timeMs * planet.speed * 0.5e-3 + planet.phase;
+        planet.mesh.position.x = Math.cos(t) * planet.orbitRadius;
+        planet.mesh.position.z = Math.sin(t) * planet.orbitRadius;
       });
-      const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
-      orbit.rotation.x = Math.PI / 2;
-      scene.add(orbit);
+      sun.rotation.y += 0.002;
     }
-  }
 
-  // === Main ===
-  const sun = addSun();
-  const planets = addPlanets();
-  addOrbitLines();
+    function renderFrame() {
+      renderer.render(scene, camera);
+    }
 
-  // === Animation ===
-  function animate() {
-    requestAnimationFrame(animate);
-    planets.forEach((planet) => {
-      const t = Date.now() * planet.speed * 0.5e-1 + planet.phase;
-      planet.mesh.position.x = Math.cos(t) * planet.orbitRadius;
-      planet.mesh.position.z = Math.sin(t) * planet.orbitRadius;
+    function animate() {
+      if (reduceMotion) return;
+      rafId = requestAnimationFrame(animate);
+      const now = performance.now();
+      updatePositions(now);
+      renderFrame();
+    }
+
+    function startAnimation() {
+      if (!rafId && !reduceMotion) {
+        rafId = requestAnimationFrame(animate);
+      }
+    }
+
+    function stopAnimation() {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+      renderFrame();
+    }
+
+    if (reduceMotion) {
+      // Static positions, render once
+      updatePositions(0);
+      renderFrame();
+    } else {
+      startAnimation();
+    }
+
+    motionMedia.addEventListener('change', (e) => {
+      reduceMotion = e.matches;
+      if (reduceMotion) {
+        stopAnimation();
+      } else {
+        startAnimation();
+      }
     });
-    sun.rotation.y += 0.002;
-    renderer.render(scene, camera);
-  }
-  animate();
 
-  // === Responsive ===
-  window.addEventListener('resize', () => {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-  });
+    // === Responsive ===
+    window.addEventListener('resize', () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      renderer.setPixelRatio(dpr);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      if (reduceMotion) {
+        renderFrame();
+      }
+    });
+  }
   </script>
 </body>
 </html>

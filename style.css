@@ -32,7 +32,6 @@ header p {
   font-size: 1.2rem;
   text-shadow: 0 1px 8px #000;
 }
-/* Removed unused main, section, and h2 styles */
 ul.social {
   list-style: none;
   padding: 0;
@@ -42,7 +41,7 @@ ul.social {
   margin: 1.5rem 0 0 0;
 }
 ul.social li a {
-  color: #90caf9 !important;
+  color: #90caf9;
   text-decoration: none;
   font-size: 1.5rem;
   transition: color 0.2s;
@@ -52,10 +51,6 @@ ul.social li a:hover {
   color: #ffe082;
 }
 @media (max-width: 700px) {
-  main {
-    padding: 1rem;
-    margin: 1rem 0;
-  }
   header h1 {
     font-size: 2rem;
   }
@@ -66,6 +61,17 @@ ul.social li a:hover {
   width: 100vw; height: 100vh;
   z-index: 0;
   pointer-events: none;
+}
+#webgl-fallback {
+  position: relative;
+  z-index: 1;
+  margin: 1rem auto 0;
+  padding: 0.5rem 0.75rem;
+  background: rgba(34, 34, 34, 0.6);
+  border-radius: 0.5rem;
+  color: #fff;
+  font-size: 0.95rem;
+  text-shadow: 0 1px 8px #000;
 }
 .dough-btn {
   display: block;
