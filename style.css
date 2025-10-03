@@ -62,11 +62,16 @@ ul.projects {
   padding: var(--gap);
 }
 
-ul.projects li {
+ul.projects a {
+  box-shadow: 0 0 10px var(--accent);
+  border-radius: calc(2 * var(--gap));
+  display: flex;
+  flex-direction: column;
   position: relative;
+  max-width: 400px;
 }
 
-ul.projects a {
+ul.projects p {
   text-decoration: none;
   background-color: var(--accent);
   padding: calc(0.5 * var(--gap));
@@ -82,13 +87,10 @@ ul.projects img {
   z-index: -1;
   object-fit: cover;
   width: 100%;
-  height: auto;
-  box-shadow: 0 0 10px var(--accent);
-  border-radius: calc(2 * var(--gap));
 }
 
 ul.projects a:hover {
-  background: linear-gradient(90deg, var(--accent-2) 60%, var(--accent) 100%);
+  box-shadow: 0 0 20px var(--accent-2);
 }
 
 @media (width < 1024px) {
@@ -96,6 +98,5 @@ ul.projects a:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 400px;
   }
 }
