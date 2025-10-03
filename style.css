@@ -1,32 +1,101 @@
-body {
-  background-color: black;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, system-ui;
+:root {
+    --bg: #000;
+    --text: #fff;
+    --muted: #bdbdbd;
+    --accent: #ffe082;
+    --accent-2: #ffd54f;
+    --link: #90caf9;
+    --shadow: 0 2px 16px #0006;
+    --gap: 1rem;
 }
 
-header h1, h2 {
+body {
+  font-weight: 800;
+  background-color: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, system-ui;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header h1, p {
   text-align: center;
 }
 
-header ul {
+header h1 {
+  color: var(--accent);
+  font-size: calc(2.5 * var(--gap));
+}
+
+header p {
+  color: var(--muted);
+  font-size: calc(1.25 * var(--gap));
+}
+
+ul.social {
   list-style: none;
   display: flex;
   justify-content: center;
+  padding-left: 0;
+  gap: calc(0.75 * var(--gap));
 }
 
 ul.social i {
-  color: white;
+  color: var(--link);
+  font-size: calc(1.25 * var(--gap));
 }
 
 ul.social i:hover {
-  color: blue;
+  color: var(--accent-2);
+}
+
+footer h2 {
+  color: var(--muted);
+  padding-left: var(--gap);
+}
+
+ul.projects {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-content: center;
+  padding: var(--gap);
+}
+
+ul.projects li {
+  position: relative;
 }
 
 ul.projects a {
   text-decoration: none;
-  color: white;
+  background-color: var(--accent);
+  padding: calc(0.5 * var(--gap));
+  border-radius: calc(2 * var(--gap));
+  text-align: center;
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+ul.projects img {
+  z-index: -1;
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+  box-shadow: 0 0 10px var(--accent);
+  border-radius: calc(2 * var(--gap));
 }
 
 ul.projects a:hover {
-  color: blue;
+  background: linear-gradient(90deg, var(--accent-2) 60%, var(--accent) 100%);
+}
+
+@media (width < 1024px) {
+  ul.projects {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
+  }
 }
