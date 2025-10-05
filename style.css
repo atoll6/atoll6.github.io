@@ -69,6 +69,7 @@ ul.projects a {
   flex-direction: column;
   position: relative;
   max-width: 400px;
+  overflow: hidden;
 }
 
 ul.projects p {
